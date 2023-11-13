@@ -1,6 +1,7 @@
 package net.weg.apigestaoprodutos.service;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Fabricante;
 import net.weg.apigestaoprodutos.model.dto.FabricanteDTO;
 import net.weg.apigestaoprodutos.model.dto.IDTO;
@@ -16,10 +17,18 @@ public class FabricanteService implements IService<Fabricante, Integer>{
 
     private FabricanteRepository fabricanteRepository;
 
+    private boolean validaNome(Fabricante fabricante){
+        if( fabricante.getNome() != null && fabricante.getNome() != ""){
+            return true;
+        }
+        throw new InvalidDataException();
+    }
+
     @Override
     public Fabricante cadastrar(IDTO dto) {
         Fabricante fabricante = new Fabricante();
         BeanUtils.copyProperties(dto, fabricante);
+        validaNome(fabricante);
         return fabricanteRepository.save(fabricante);
     }
 
@@ -27,6 +36,7 @@ public class FabricanteService implements IService<Fabricante, Integer>{
     public Fabricante editar(IDTO dto) {
         Fabricante fabricante = new Fabricante();
         BeanUtils.copyProperties(fabricante, dto);
+        validaNome(fabricante);
         return fabricanteRepository.save(fabricante);
     }
 

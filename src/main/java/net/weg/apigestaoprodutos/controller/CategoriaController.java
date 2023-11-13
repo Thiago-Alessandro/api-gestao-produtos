@@ -1,10 +1,12 @@
 package net.weg.apigestaoprodutos.controller;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Categoria;
 import net.weg.apigestaoprodutos.model.dto.CategoriaDTO;
 import net.weg.apigestaoprodutos.model.dto.IDTO;
 import net.weg.apigestaoprodutos.service.CategoriaService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,10 @@ public class CategoriaController implements IController<Categoria, Integer>{
     public ResponseEntity<Categoria> cadastrar(@RequestBody IDTO categoria) {
         try {
             return new ResponseEntity<>(categoriaService.cadastrar(categoria),HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (DuplicateKeyException e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
@@ -34,8 +38,10 @@ public class CategoriaController implements IController<Categoria, Integer>{
     public ResponseEntity<Categoria> editar(IDTO categoria) {
         try {
             return new ResponseEntity<>(categoriaService.editar(categoria),HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (DuplicateKeyException e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
@@ -64,11 +70,7 @@ public class CategoriaController implements IController<Categoria, Integer>{
     @GetMapping()
     @Override
     public ResponseEntity<Collection<Categoria>> buscarTodos() {
-        try {
-            return new ResponseEntity<>(categoriaService.buscarTodos(), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(categoriaService.buscarTodos(), HttpStatus.OK);
     }
 
 }

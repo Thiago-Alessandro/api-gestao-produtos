@@ -33,8 +33,8 @@ public class Produto {
     private Double peso;
     @Column(nullable = false)
     private Double medida;
-//    @Column(nullable = false)
     @ManyToOne
+//    @Column(nullable = false)
     private Fabricante fabricante;
     @Column(nullable = false)
     @ManyToMany

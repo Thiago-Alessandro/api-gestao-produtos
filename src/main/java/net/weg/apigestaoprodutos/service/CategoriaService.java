@@ -1,6 +1,7 @@
 package net.weg.apigestaoprodutos.service;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Categoria;
 import net.weg.apigestaoprodutos.model.Produto;
 import net.weg.apigestaoprodutos.model.dto.CategoriaDTO;
@@ -17,10 +18,18 @@ public class CategoriaService implements IService<Categoria, Integer>{
 
     private CategoriaRepository categoriaRepository;
 
+    private boolean validaNome(Categoria categoria){
+        if(categoria.getNome() != null && categoria.getNome() != ""){
+            return true;
+        }
+        throw new InvalidDataException();
+    }
+
     @Override
     public Categoria cadastrar(IDTO dto) {
         Categoria categoria = new Categoria();
         BeanUtils.copyProperties(dto,categoria);
+        validaNome(categoria);
         return categoriaRepository.save(categoria);
     }
 
@@ -28,6 +37,7 @@ public class CategoriaService implements IService<Categoria, Integer>{
     public Categoria editar(IDTO dto) {
         Categoria categoria = new Categoria();
         BeanUtils.copyProperties(categoria, dto);
+        validaNome(categoria);
         return categoriaRepository.save(categoria);
     }
 

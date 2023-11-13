@@ -19,6 +19,7 @@ public class Categoria {
     private Integer id;
     @Column(unique = true)
     private String nome;
+    private String descricao;
     @ManyToMany(mappedBy = "categorias")
     @JsonIgnore
     private Collection<Produto> produtos;

@@ -1,9 +1,12 @@
 package net.weg.apigestaoprodutos.controller;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.ElementAlreadyExistsException;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Fabricante;
 import net.weg.apigestaoprodutos.model.dto.IDTO;
 import net.weg.apigestaoprodutos.service.FabricanteService;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +26,7 @@ public class FabricanteCotroller implements IController<Fabricante, Integer>{
     public ResponseEntity<Fabricante> cadastrar(@RequestBody IDTO fabricante) {
         try {
             return new ResponseEntity<>(fabricanteService.cadastrar(fabricante),HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -33,7 +36,7 @@ public class FabricanteCotroller implements IController<Fabricante, Integer>{
     public ResponseEntity<Fabricante> editar(@RequestBody IDTO fabricante) {
         try {
             return new ResponseEntity<>(fabricanteService.editar(fabricante),HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -62,11 +65,7 @@ public class FabricanteCotroller implements IController<Fabricante, Integer>{
     @GetMapping
     @Override
     public ResponseEntity<Collection<Fabricante>> buscarTodos() {
-        try {
-            return new ResponseEntity<>(fabricanteService.buscarTodos(), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 }

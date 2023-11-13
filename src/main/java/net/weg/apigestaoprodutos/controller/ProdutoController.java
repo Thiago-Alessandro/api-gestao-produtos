@@ -1,6 +1,8 @@
 package net.weg.apigestaoprodutos.controller;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.ElementAlreadyExistsException;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Produto;
 import net.weg.apigestaoprodutos.model.dto.IDTO;
 import net.weg.apigestaoprodutos.service.ProdutoService;
@@ -24,10 +26,10 @@ public class ProdutoController implements IController<Produto, Integer>{
     public ResponseEntity<Produto> cadastrar(@RequestBody IDTO produto) {
         try {
             return new ResponseEntity<>(produtoService.cadastrar(produto), HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (DuplicateKeyException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (ElementAlreadyExistsException e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
@@ -36,10 +38,10 @@ public class ProdutoController implements IController<Produto, Integer>{
     public ResponseEntity<Produto> editar(@RequestBody IDTO produto) {
         try {
             return new ResponseEntity<>(produtoService.editar(produto), HttpStatus.OK);
-        } catch (NullPointerException e) {
+        } catch (InvalidDataException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (DuplicateKeyException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (ElementAlreadyExistsException e){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
     }
 
@@ -51,8 +53,6 @@ public class ProdutoController implements IController<Produto, Integer>{
             return new ResponseEntity<>( HttpStatus.OK);
         } catch (NullPointerException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (DuplicateKeyException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -63,20 +63,12 @@ public class ProdutoController implements IController<Produto, Integer>{
             return new ResponseEntity<>(produtoService.buscarUm(id), HttpStatus.OK);
         } catch (NullPointerException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (DuplicateKeyException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping
     @Override
     public ResponseEntity<Collection<Produto>> buscarTodos() {
-        try {
-            return new ResponseEntity<>(produtoService.buscarTodos(), HttpStatus.OK);
-        } catch (NullPointerException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (DuplicateKeyException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(produtoService.buscarTodos(), HttpStatus.OK);
     }
 }

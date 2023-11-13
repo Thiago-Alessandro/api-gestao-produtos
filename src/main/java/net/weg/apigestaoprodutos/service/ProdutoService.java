@@ -1,6 +1,8 @@
 package net.weg.apigestaoprodutos.service;
 
 import lombok.AllArgsConstructor;
+import net.weg.apigestaoprodutos.exception.ElementAlreadyExistsException;
+import net.weg.apigestaoprodutos.exception.InvalidDataException;
 import net.weg.apigestaoprodutos.model.Produto;
 import net.weg.apigestaoprodutos.model.dto.IDTO;
 import net.weg.apigestaoprodutos.repository.ProdutoRepository;
@@ -25,21 +27,20 @@ public class ProdutoService implements IService<Produto, Integer>{
                 && produto.getNome() != "" && produto.getPreco() >= 0 && produto.getProdutosEmEstoque() >= 0 && produto.getMedida() > 0){
             return true;
         }
-        throw new NullPointerException("O produto não pode ter atributos nulos!");
+        throw new InvalidDataException();
     }
 
-    private boolean verificaProdutoExiste(Produto produto){
+    private boolean verificaProdutoExistePorCodigoDeBarras(Produto produto){
         return produtoRepository.existsByCodigoDeBarras(produto.getCodigoDeBarras());
     }
-
 
     @Override
     public Produto cadastrar(IDTO dto) {
         Produto produto = new Produto();
         BeanUtils.copyProperties(produto,dto);
         validarProduto(produto);
-        if(verificaProdutoExiste(produto)){
-            throw new DuplicateKeyException("Este produto já está registrado no estoque!");
+        if(verificaProdutoExistePorCodigoDeBarras(produto)){
+            throw new ElementAlreadyExistsException();
         }
         return produtoRepository.save(produto);
     }
@@ -49,8 +50,8 @@ public class ProdutoService implements IService<Produto, Integer>{
         Produto produto = new Produto();
         BeanUtils.copyProperties(produto,dto);
         validarProduto(produto);
-        if(verificaProdutoExiste(produto)){
-            throw new DuplicateKeyException("Este produto já está registrado no estoque!");
+        if(verificaProdutoExistePorCodigoDeBarras(produto)){
+            throw new ElementAlreadyExistsException();
         }
         return produtoRepository.save(produto);
     }
@@ -68,7 +69,7 @@ public class ProdutoService implements IService<Produto, Integer>{
     @Override
     public Produto buscarUm(Integer id) {
         Produto produto = produtoRepository.findById(id).get();
-        if (verificaProdutoExiste(produto)){
+        if (verificaProdutoExistePorCodigoDeBarras(produto)){
             return produto;
         }
         throw new NoSuchElementException();
